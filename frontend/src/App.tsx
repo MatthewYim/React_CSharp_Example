@@ -5,6 +5,9 @@ import Search from "./Components/Search/Search";
 import { searchCompanies } from "./api";
 import { CompanySearch } from "./company";
 import ListPortfolio from "./Components/Portfolio/ListPortfolio/ListPortfolio";
+import { on } from "process";
+import Navbar from "./Components/Navbar/Navbar";
+import Hero from "./Components/Hero/Hero";
 
 function App() {
   const [search, setSearch] = useState<string>(""); // you can have ts either infer it(no generics) or use generics to set type checking
@@ -26,6 +29,13 @@ function App() {
     setPortfolioValues(updatedPortfolio); // Reason for this, is cuz React doesn't like mutable arrays, wants a new array to re-render
   };
 
+  const onPortfolioDelete = (e: any) => {
+    e.preventDefault();
+    const removed = portfolioValues.filter((value) => {
+      return value !== e.target[0].value;
+    });
+    setPortfolioValues(removed);
+  };
   const onSearchSubmit = async (e: SyntheticEvent) => {
     // If you can't get event MouseEvent<HTMLButtonElement, MouseEvent> to work use "e: SyntheticEvent"
     e.preventDefault();
@@ -39,19 +49,23 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <>
+      <Navbar />
       <Search
         onSearchSubmit={onSearchSubmit}
         search={search}
         handleSearchChange={handleSearchChange}
       />
-      <ListPortfolio portfolioValues={portfolioValues} />
+      <ListPortfolio
+        portfolioValues={portfolioValues}
+        onPortfolioDelete={onPortfolioDelete}
+      />
       <CardList
         searchResults={searchResult}
         onPortfolioCreate={onPortfolioCreate}
       />
       {serverError && <h1>{serverError}</h1>}
-    </div>
+    </>
   );
 }
 
